@@ -34,48 +34,6 @@ A playlist-driven audio player with play/pause/next/previous, a draggable
 progress bar, volume control, and a clickable track list. Uses freely-licensed
 SoundHelix demo tracks and Picsum placeholder art so it works out of the box.
 
-*(Task 3, Portfolio Website, was skipped since it needs your personal
-projects/resume content — happy to build it once you share what should go
-in it.)*
-
 ---
-
-## Python Programming
-
-⚠️ **Heads-up:** `Task1_Calculator/` and `Task3_Student_Analysis/` below were
-built *before* your official Python-track PDF arrived, so they don't actually
-match that task list (Hangman, Stock Portfolio Tracker, Task Automation,
-Chatbot). Only Hangman lines up. Let me know if you want the real 2–3 tasks
-(e.g. Stock Portfolio Tracker + Chatbot) built to replace these.
-
-| # | Task | Folder | Tech Used | Matches official list? |
-|---|------|--------|-----------|--------------------------|
-| — | Simple Calculator | `Task1_Calculator/` | Python (standard library) | ❌ not on the list |
-| 1 | Hangman Game | `Task2_Hangman/` | Python (`random`) | ✅ |
-| — | Student Performance Analysis | `Task3_Student_Analysis/` | Python, Pandas, NumPy, Matplotlib | ❌ not on the list |
-
-```bash
-cd Task2_Hangman
-python hangman.py
-```
-
----
-
-## Machine Learning & Power BI
-
-Not started yet. Once you're ready, tell me which 2–3 tasks per domain you
-want and I'll build those next (ML tasks need real datasets and are
-noticeably heavier — Credit Scoring and Disease Prediction are the most
-approachable of the four).
-
----
-
-## Requirements
-
-- Frontend tasks: any modern browser, no install needed.
-- Python tasks: Python 3.8+. `Task3_Student_Analysis` additionally needs
-  `pandas`, `numpy`, `matplotlib` (see its `requirements.txt`).
-
-## Author
-
+### Author
 Completed as part of the Horizon TechX Internship Program.
