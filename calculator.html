@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator — Horizon TechX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --stone-900:#1c1b19;
+    --stone-800:#2b2926;
+    --stone-700:#3c3934;
+    --stone-600:#57534c;
+    --paper:#eae5da;
+    --screen-bg:#cdd6c4;
+    --screen-ink:#26311f;
+    --ember:#e0782f;
+    --ember-dark:#b95f22;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    background:
+      radial-gradient(circle at 20% 10%, #26241f 0%, transparent 45%),
+      var(--stone-900);
+    font-family:'Space Grotesk', sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:32px 16px;
+    color:var(--paper);
+  }
+
+  .rig{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+  }
+  .rig-label{
+    font-size:12px;
+    letter-spacing:.04em;
+    color:var(--stone-600);
+  }
+  .rig-label b{ color:var(--paper); font-weight:500; }
+
+  .calc{
+    width:320px;
+    background:linear-gradient(160deg, var(--stone-800), var(--stone-900));
+    border-radius:22px;
+    padding:22px;
+    box-shadow:
+      0 30px 60px -20px rgba(0,0,0,.7),
+      inset 0 1px 0 rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.05);
+  }
+
+  .screen{
+    background:var(--screen-bg);
+    border-radius:12px;
+    padding:22px 18px 16px;
+    margin-bottom:18px;
+    box-shadow:inset 0 2px 10px rgba(0,0,0,.35);
+    position:relative;
+    overflow:hidden;
+  }
+  .screen::after{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.03) 0 1px, transparent 1px 3px);
+    pointer-events:none;
+  }
+  .screen-expr{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:#5a6650;
+    min-height:16px;
+    text-align:right;
+    letter-spacing:.02em;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .screen-result{
+    font-family:'JetBrains Mono', monospace;
+    font-size:40px;
+    font-weight:500;
+    color:var(--screen-ink);
+    text-align:right;
+    line-height:1.15;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .pad{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+  }
+
+  button{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:18px;
+    font-weight:500;
+    border:none;
+    border-radius:10px;
+    padding:16px 0;
+    cursor:pointer;
+    color:var(--paper);
+    background:var(--stone-700);
+    box-shadow:0 3px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+    transition:transform .05s ease, box-shadow .05s ease, background .15s ease;
+  }
+  button:active{
+    transform:translateY(2px);
+    box-shadow:0 1px 0 rgba(0,0,0,.35);
+  }
+  button:hover{ background:#46423c; }
+
+  button.op{
+    background:transparent;
+    color:var(--ember);
+    border:1.5px solid var(--ember-dark);
+    box-shadow:none;
+  }
+  button.op:hover{ background:rgba(224,120,47,.1); }
+  button.op:active{ transform:translateY(2px); }
+
+  button.equals{
+    background:var(--ember);
+    color:#241207;
+    grid-row:span 2;
+    box-shadow:0 3px 0 var(--ember-dark);
+    font-weight:700;
+  }
+  button.equals:hover{ background:#ea8a41; }
+  button.equals:active{ box-shadow:0 1px 0 var(--ember-dark); }
+
+  button.func{
+    background:var(--stone-800);
+    color:#a39d90;
+    font-size:15px;
+    border:1px solid var(--stone-700);
+    box-shadow:none;
+  }
+  button.func:hover{ color:var(--paper); }
+
+  button.zero{ grid-column:span 2; }
+
+  @media (max-width:360px){
+    .calc{ width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="rig">
+  <div class="calc">
+    <div class="screen">
+      <div class="screen-expr" id="expr">&nbsp;</div>
+      <div class="screen-result" id="result">0</div>
+    </div>
+
+    <div class="pad">
+      <button class="func" data-action="clear">AC</button>
+      <button class="func" data-action="backspace">⌫</button>
+      <button class="func" data-action="percent">%</button>
+      <button class="op" data-op="÷">÷</button>
+
+      <button data-num="7">7</button>
+      <button data-num="8">8</button>
+      <button data-num="9">9</button>
+      <button class="op" data-op="×">×</button>
+
+      <button data-num="4">4</button>
+      <button data-num="5">5</button>
+      <button data-num="6">6</button>
+      <button class="op" data-op="−">−</button>
+
+      <button data-num="1">1</button>
+      <button data-num="2">2</button>
+      <button data-num="3">3</button>
+      <button class="op" data-op="+">+</button>
+
+      <button class="zero" data-num="0">0</button>
+      <button data-num=".">.</button>
+      <button class="equals" data-action="equals">=</button>
+    </div>
+  </div>
+  <div class="rig-label">Frontend Task 2 — <b>Horizon TechX</b> Internship</div>
+</div>
+
+<script>
+  const exprEl = document.getElementById('expr');
+  const resultEl = document.getElementById('result');
+
+  let current = '0';
+  let expression = '';
+  let justEvaluated = false;
+
+  function render(){
+    resultEl.textContent = current;
+    exprEl.textContent = expression || '\u00a0';
+  }
+
+  function toOperator(sym){
+    return { '÷':'/', '×':'*', '−':'-', '+':'+' }[sym];
+  }
+
+  function evaluate(expr){
+    // Only digits, operators, decimal points and spaces are ever placed
+    // in `expr`, so this is safe to evaluate.
+    if (!/^[0-9+\-*/. ]+$/.test(expr)) return 'Error';
+    try {
+      // eslint-disable-next-line no-new-func
+      const value = Function(`"use strict"; return (${expr})`)();
+      if (!isFinite(value)) return 'Error';
+      return trimNumber(value);
+    } catch (e) {
+      return 'Error';
+    }
+  }
+
+  function trimNumber(value){
+    const rounded = Math.round(value * 1e9) / 1e9;
+    return rounded.toString();
+  }
+
+  function pressNumber(digit){
+    if (justEvaluated){
+      current = digit === '.' ? '0.' : digit;
+      expression = '';
+      justEvaluated = false;
+      render();
+      return;
+    }
+    if (digit === '.' && current.includes('.')) return;
+    if (current === '0' && digit !== '.'){
+      current = digit;
+    } else {
+      current += digit;
+    }
+    render();
+  }
+
+  function pressOperator(sym){
+    justEvaluated = false;
+    expression += current + ' ' + sym + ' ';
+    current = '0';
+    render();
+  }
+
+  function pressEquals(){
+    const full = expression + current;
+    if (!expression) return;
+    const rawExpr = full.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');
+    const value = evaluate(rawExpr);
+    exprEl.textContent = full + ' =';
+    current = value;
+    expression = '';
+    justEvaluated = true;
+    resultEl.textContent = current;
+  }
+
+  function pressClear(){
+    current = '0';
+    expression = '';
+    justEvaluated = false;
+    render();
+  }
+
+  function pressBackspace(){
+    if (justEvaluated) { pressClear(); return; }
+    current = current.length > 1 ? current.slice(0, -1) : '0';
+    render();
+  }
+
+  function pressPercent(){
+    current = trimNumber(parseFloat(current) / 100);
+    render();
+  }
+
+  document.querySelectorAll('[data-num]').forEach(btn=>{
+    btn.addEventListener('click', ()=> pressNumber(btn.dataset.num));
+  });
+  document.querySelectorAll('[data-op]').forEach(btn=>{
+    btn.addEventListener('click', ()=> pressOperator(btn.dataset.op));
+  });
+  document.querySelector('[data-action="equals"]').addEventListener('click', pressEquals);
+  document.querySelector('[data-action="clear"]').addEventListener('click', pressClear);
+  document.querySelector('[data-action="backspace"]').addEventListener('click', pressBackspace);
+  document.querySelector('[data-action="percent"]').addEventListener('click', pressPercent);
+
+  window.addEventListener('keydown', (e)=>{
+    if (e.key >= '0' && e.key <= '9') pressNumber(e.key);
+    else if (e.key === '.') pressNumber('.');
+    else if (e.key === '+') pressOperator('+');
+    else if (e.key === '-') pressOperator('−');
+    else if (e.key === '*') pressOperator('×');
+    else if (e.key === '/') { e.preventDefault(); pressOperator('÷'); }
+    else if (e.key === 'Enter' || e.key === '=') pressEquals();
+    else if (e.key === 'Backspace') pressBackspace();
+    else if (e.key === 'Escape') pressClear();
+  });
+
+  render();
+</script>
+</body>
+</html>
