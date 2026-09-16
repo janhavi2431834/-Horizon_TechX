@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Notes — Photo Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wall:#f2efe8;
+    --wall-line:#ded8ca;
+    --ink:#211f1a;
+    --ink-soft:#6b6558;
+    --rust:#8c3a22;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; }
+  body{
+    background:var(--wall);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+
+  header{
+    padding:56px 24px 28px;
+    max-width:1080px;
+    margin:0 auto;
+    border-bottom:1px solid var(--wall-line);
+  }
+  .kicker{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'Newsreader', serif;
+    font-weight:500;
+    font-size:clamp(34px, 6vw, 54px);
+    margin:0 0 14px;
+    line-height:1.05;
+  }
+  header p{
+    max-width:52ch;
+    color:var(--ink-soft);
+    font-size:15px;
+    line-height:1.6;
+    margin:0;
+  }
+
+  .filters{
+    max-width:1080px;
+    margin:0 auto;
+    padding:22px 24px 0;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .filters button{
+    font-family:'Inter', sans-serif;
+    font-size:13.5px;
+    padding:8px 16px;
+    border-radius:100px;
+    border:1px solid var(--wall-line);
+    background:transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .filters button:hover{ border-color:var(--ink); color:var(--ink); }
+  .filters button.active{
+    background:var(--ink);
+    color:var(--wall);
+    border-color:var(--ink);
+  }
+
+  .gallery{
+    max-width:1080px;
+    margin:0 auto;
+    padding:28px 24px 80px;
+    columns:3 260px;
+    column-gap:16px;
+  }
+  figure{
+    margin:0 0 16px;
+    break-inside:avoid;
+    cursor:zoom-in;
+    position:relative;
+    overflow:hidden;
+    border-radius:2px;
+  }
+  figure img{
+    width:100%;
+    display:block;
+    transition:transform .5s ease, filter .5s ease;
+  }
+  figure:hover img{ transform:scale(1.035); }
+  figcaption{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    padding:14px 14px 10px;
+    background:linear-gradient(to top, rgba(10,9,7,.72), transparent);
+    color:#f2efe8;
+    font-size:12.5px;
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  figure:hover figcaption{ opacity:1; transform:translateY(0); }
+  figcaption .cap-title{
+    font-family:'Newsreader', serif;
+    font-size:15px;
+    display:block;
+  }
+
+  figure.hidden{ display:none; }
+
+  /* Lightbox */
+  .lightbox{
+    position:fixed; inset:0;
+    background:rgba(15,13,10,.94);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:40px 20px;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox-inner{
+    max-width:min(920px, 92vw);
+    max-height:88vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .lightbox img{
+    max-width:100%;
+    max-height:72vh;
+    display:block;
+    box-shadow:0 30px 70px rgba(0,0,0,.5);
+  }
+  .lightbox-meta{
+    color:#e8e3d8;
+    text-align:center;
+    margin-top:16px;
+    font-family:'Newsreader', serif;
+    font-size:18px;
+  }
+  .lightbox-meta span{
+    display:block;
+    font-family:'Inter', sans-serif;
+    font-size:12.5px;
+    color:#a39a86;
+    margin-top:4px;
+  }
+
+  .lb-close, .lb-prev, .lb-next{
+    position:absolute;
+    background:transparent;
+    border:1px solid rgba(242,239,232,.25);
+    color:#f2efe8;
+    border-radius:100px;
+    cursor:pointer;
+    font-family:'Inter', sans-serif;
+  }
+  .lb-close{ top:24px; right:24px; width:38px; height:38px; font-size:18px; }
+  .lb-prev, .lb-next{ top:50%; transform:translateY(-50%); width:44px; height:44px; font-size:20px; }
+  .lb-prev{ left:16px; }
+  .lb-next{ right:16px; }
+  .lb-close:hover, .lb-prev:hover, .lb-next:hover{ border-color:var(--rust); color:var(--rust); }
+
+  footer{
+    text-align:center;
+    padding:24px;
+    color:var(--ink-soft);
+    font-size:12.5px;
+  }
+
+  @media (max-width:640px){
+    .gallery{ columns:1 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="kicker">Frontend Task 1 — Horizon TechX Internship</p>
+  <h1>Field Notes</h1>
+  <p>A small working gallery of frames from three ongoing series. Filter by series, click any frame to view it full size and step through the set.</p>
+</header>
+
+<nav class="filters" id="filters">
+  <button data-filter="all" class="active">All</button>
+  <button data-filter="terrain">Terrain</button>
+  <button data-filter="structure">Structure</button>
+  <button data-filter="street">Street</button>
+</nav>
+
+<section class="gallery" id="gallery"></section>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">✕</button>
+  <button class="lb-prev" id="lbPrev">‹</button>
+  <button class="lb-next" id="lbNext">›</button>
+  <div class="lightbox-inner">
+    <img id="lbImage" src="" alt="">
+    <div class="lightbox-meta">
+      <div id="lbTitle"></div>
+      <span id="lbCounter"></span>
+    </div>
+  </div>
+</div>
+
+<footer>Images via Lorem Picsum — used as design placeholders.</footer>
+
+<script>
+  const photos = [
+    { seed:'terrain-1', title:'Ridge Line, Dawn', category:'terrain' },
+    { seed:'terrain-2', title:'Salt Flat Study', category:'terrain' },
+    { seed:'terrain-3', title:'Fog Over the Valley', category:'terrain' },
+    { seed:'terrain-4', title:'Coastal Erosion', category:'terrain' },
+    { seed:'structure-1', title:'Stairwell, Block C', category:'structure' },
+    { seed:'structure-2', title:'Glass Facade', category:'structure' },
+    { seed:'structure-3', title:'Concrete Overpass', category:'structure' },
+    { seed:'structure-4', title:'Old Grain Silo', category:'structure' },
+    { seed:'street-1', title:'Corner Store, 6AM', category:'street' },
+    { seed:'street-2', title:'Rain on Fifth', category:'street' },
+    { seed:'street-3', title:'Market Crowd', category:'street' },
+    { seed:'street-4', title:'Night Bus Stop', category:'street' },
+  ];
+
+  const galleryEl = document.getElementById('gallery');
+
+  function imgUrl(seed, w, h){
+    return `https://picsum.photos/seed/${seed}/${w}/${h}`;
+  }
+
+  photos.forEach((p, i)=>{
+    const fig = document.createElement('figure');
+    fig.dataset.category = p.category;
+    fig.dataset.index = i;
+    fig.innerHTML = `
+      <img src="${imgUrl(p.seed, 500, 620 + (i % 3) * 60)}" alt="${p.title}" loading="lazy">
+      <figcaption>
+        <span class="cap-title">${p.title}</span>
+        <span style="text-transform:capitalize;opacity:.8;">${p.category}</span>
+      </figcaption>
+    `;
+    fig.addEventListener('click', ()=> openLightbox(i));
+    galleryEl.appendChild(fig);
+  });
+
+  // Filters
+  document.getElementById('filters').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    document.querySelectorAll('.filters button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('figure').forEach(fig=>{
+      fig.classList.toggle('hidden', filter !== 'all' && fig.dataset.category !== filter);
+    });
+  });
+
+  // Lightbox
+  const lightbox = document.getElementById('lightbox');
+  const lbImage = document.getElementById('lbImage');
+  const lbTitle = document.getElementById('lbTitle');
+  const lbCounter = document.getElementById('lbCounter');
+  let currentIndex = 0;
+
+  function openLightbox(i){
+    currentIndex = i;
+    renderLightbox();
+    lightbox.classList.add('open');
+  }
+  function renderLightbox(){
+    const p = photos[currentIndex];
+    lbImage.src = imgUrl(p.seed, 1000, 700);
+    lbImage.alt = p.title;
+    lbTitle.textContent = p.title;
+    lbCounter.textContent = `${currentIndex + 1} / ${photos.length} — ${p.category}`;
+  }
+  function closeLightbox(){ lightbox.classList.remove('open'); }
+  function step(delta){
+    currentIndex = (currentIndex + delta + photos.length) % photos.length;
+    renderLightbox();
+  }
+
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbPrev').addEventListener('click', ()=> step(-1));
+  document.getElementById('lbNext').addEventListener('click', ()=> step(1));
+  lightbox.addEventListener('click', (e)=>{ if (e.target === lightbox) closeLightbox(); });
+
+  window.addEventListener('keydown', (e)=>{
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowLeft') step(-1);
+    else if (e.key === 'ArrowRight') step(1);
+  });
+</script>
+</body>
+</html>
