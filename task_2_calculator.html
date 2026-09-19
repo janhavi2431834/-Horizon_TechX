@@ -212,11 +212,9 @@
   }
 
   function evaluate(expr){
-    // Only digits, operators, decimal points and spaces are ever placed
-    // in `expr`, so this is safe to evaluate.
+  
     if (!/^[0-9+\-*/. ]+$/.test(expr)) return 'Error';
     try {
-      // eslint-disable-next-line no-new-func
       const value = Function(`"use strict"; return (${expr})`)();
       if (!isFinite(value)) return 'Error';
       return trimNumber(value);
