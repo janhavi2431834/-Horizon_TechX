@@ -117,7 +117,6 @@
 
   figure.hidden{ display:none; }
 
-  /* Lightbox */
   .lightbox{
     position:fixed; inset:0;
     background:rgba(15,13,10,.94);
@@ -252,7 +251,7 @@
     galleryEl.appendChild(fig);
   });
 
-  // Filters
+
   document.getElementById('filters').addEventListener('click', (e)=>{
     const btn = e.target.closest('button');
     if (!btn) return;
@@ -264,7 +263,7 @@
     });
   });
 
-  // Lightbox
+  
   const lightbox = document.getElementById('lightbox');
   const lbImage = document.getElementById('lbImage');
   const lbTitle = document.getElementById('lbTitle');
